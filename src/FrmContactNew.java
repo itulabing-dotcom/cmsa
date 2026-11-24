@@ -144,6 +144,7 @@ public class FrmContactNew extends javax.swing.JDialog {
         }
     }
 
+
         if (groupId == null) {
            JOptionPane.showMessageDialog(this, "Please select a valid group.");
            return;
@@ -152,12 +153,7 @@ public class FrmContactNew extends javax.swing.JDialog {
         int option = JOptionPane.showConfirmDialog(null, "Are you sure?", "Confirm save", JOptionPane.OK_CANCEL_OPTION);
         
         if(option == JOptionPane.OK_OPTION){
-            contact = new Contact(
-            tfPhoneNumber.getText(),
-            tfFirstname.getText(),
-            tfLastname.getText(),
-            groupId
-            );
+            contact = new Contact(tfPhoneNumber.getText(), tfFirstname.getText(), tfLastname.getText(), groupId);
   
             this.dispose();
         }
