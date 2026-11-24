@@ -2,8 +2,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
  */
-import java.awt.Frame;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 /**
@@ -12,17 +10,22 @@ import javax.swing.JOptionPane;
  */
 public class FrmContactEdit extends javax.swing.JDialog {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrmContactNew.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrmContactEdit.class.getName());
     private Contact contact;
-    private boolean updated = false;
+    private boolean updated=false;
+    private List<Group> groups;
+
     /**
      * Creates new form FrmContactNew
      */
-    public FrmContactEdit(java.awt.Frame parent, boolean modal, Contact contact) {
+    public FrmContactEdit(java.awt.Frame parent, boolean modal, Contact contact, List<Group> groups) {
         super(parent, modal);
         initComponents();
         
         this.contact = contact;
+        this.groups = groups;
+        loadGroups();
+        
         loadContact();
     }
 
@@ -38,6 +41,13 @@ public class FrmContactEdit extends javax.swing.JDialog {
         tfPhoneNumber.setText(this.contact.getPhoneNumber());
         tfFirstname.setText(this.contact.getFirstname());
         tfLastname.setText(this.contact.getLastname());
+        cbGroupId.setSelectedItem(this.contact.getGroupId());
+    }
+    
+    public void loadGroups(){
+        for(Group group : this.groups){
+            cbGroupId.addItem(group.getGroupName());
+        }
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -139,15 +149,17 @@ public class FrmContactEdit extends javax.swing.JDialog {
 
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
         // TODO add your handling code here:
-        int option = JOptionPane.showConfirmDialog(null, "Are you sure?", "Confirm update", JOptionPane.OK_CANCEL_OPTION);
+        Group selectedGroup = (Group) cbGroupId.getSelectedItem();
+        
+        int option = JOptionPane.showConfirmDialog(null, "Are you sure?", "Confirm save", JOptionPane.OK_CANCEL_OPTION);
         
         if(option == JOptionPane.OK_OPTION){
+            String phoneNumber = tfPhoneNumber.getText();
             String firstname = tfFirstname.getText();
             String lastname = tfLastname.getText();
-            this.contact.setFirstname(firstname);
-            this.contact.setLastname(lastname);
+            String groupId = selectedGroup.getGroupId();
+            this.contact = new Contact(phoneNumber, firstname, lastname, groupId);
             
-            this.updated=true;
             this.dispose();
         } 
     }//GEN-LAST:event_btnUpdateActionPerformed
@@ -184,10 +196,21 @@ public class FrmContactEdit extends javax.swing.JDialog {
         //</editor-fold>
 
         /* Create and display the dialog */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
+            logger.log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                FrmContactNew dialog = new FrmContactNew(new javax.swing.JFrame(), true, null);
+                FrmContactEdit dialog = new FrmContactEdit(new javax.swing.JFrame(), true, null, null);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {

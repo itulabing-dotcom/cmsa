@@ -1,9 +1,13 @@
+
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Angeline Tulabing
@@ -16,25 +20,35 @@ public class FrmMain extends javax.swing.JFrame {
     String phoneNumber;
     String groupId;
     /**
-     * Creates new form FrmMain2
+     * Creates new form FrmMain
      */
     public FrmMain() {
         initComponents();
         loadContacts("*");
         loadGroups("*");
     }
-    
+
     void loadContacts(String keyword){
         DefaultTableModel model = (DefaultTableModel) tblContacts.getModel();
         model.setRowCount(0);
         
         if(keyword.equals("*")){
             for(Contact contact : this.contactDAOImpl.getAllContacts()){
-                model.addRow(new Object[]{
-                    contact.getPhoneNumber(), 
-                    contact.getFirstname(), 
-                    contact.getLastname(),
-                    contact.getGroupId()});
+                int index = this.groupDAOImpl.getIndex(contact.getGroupId());
+
+if(index != -1){
+    model.addRow(new Object[]{
+        contact.getPhoneNumber(), 
+        contact.getFirstname(), 
+        contact.getLastname(),
+        this.groupDAOImpl.getAllGroups().get(index).getGroupName()});
+} else {
+    model.addRow(new Object[]{
+        contact.getPhoneNumber(), 
+        contact.getFirstname(), 
+        contact.getLastname(),
+        "No group found"});
+}
             }
         } else {
             for(Contact contact : this.contactDAOImpl.searchContacts(keyword)){
@@ -74,6 +88,12 @@ public class FrmMain extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        pmnuContacts = new javax.swing.JPopupMenu();
+        pmnuiEdit = new javax.swing.JMenuItem();
+        pmnuiDelete = new javax.swing.JMenuItem();
+        pmnuGroups = new javax.swing.JPopupMenu();
+        pmnuiEditGroup = new javax.swing.JMenuItem();
+        pmnuiDeleteGroup = new javax.swing.JMenuItem();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -83,18 +103,32 @@ public class FrmMain extends javax.swing.JFrame {
         tblContacts = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        tfGroupSearch = new javax.swing.JTextField();
+        tfSearchGroup = new javax.swing.JTextField();
         btnNewGroup = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblGroups = new javax.swing.JTable();
 
+        pmnuiEdit.setText("Edit");
+        pmnuiEdit.addActionListener(this::pmnuiEditActionPerformed);
+        pmnuContacts.add(pmnuiEdit);
+
+        pmnuiDelete.setText("Delete");
+        pmnuiDelete.addActionListener(this::pmnuiDeleteActionPerformed);
+        pmnuContacts.add(pmnuiDelete);
+
+        pmnuiEditGroup.setText("Edit");
+        pmnuiEditGroup.addActionListener(this::pmnuiEditGroupActionPerformed);
+        pmnuGroups.add(pmnuiEditGroup);
+
+        pmnuiDeleteGroup.setText("Delete");
+        pmnuiDeleteGroup.addActionListener(this::pmnuiDeleteGroupActionPerformed);
+        pmnuGroups.add(pmnuiDeleteGroup);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Contacts Management System");
 
         jLabel1.setText("Search:");
 
         tfSearchContact.addCaretListener(this::tfSearchContactCaretUpdate);
-        tfSearchContact.addActionListener(this::tfSearchContactActionPerformed);
 
         btnNewContact.setText("New Contact");
         btnNewContact.addActionListener(this::btnNewContactActionPerformed);
@@ -104,7 +138,7 @@ public class FrmMain extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Phone number", "First name", "Last name", "Group ID"
+                "Phone number", "First name", "Last name", "Group name"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -115,6 +149,11 @@ public class FrmMain extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tblContacts.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblContactsMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblContacts);
         if (tblContacts.getColumnModel().getColumnCount() > 0) {
             tblContacts.getColumnModel().getColumn(0).setResizable(false);
@@ -122,7 +161,7 @@ public class FrmMain extends javax.swing.JFrame {
             tblContacts.getColumnModel().getColumn(2).setResizable(false);
             tblContacts.getColumnModel().getColumn(2).setHeaderValue("Last name");
             tblContacts.getColumnModel().getColumn(3).setResizable(false);
-            tblContacts.getColumnModel().getColumn(3).setHeaderValue("Group ID");
+            tblContacts.getColumnModel().getColumn(3).setHeaderValue("Group name");
         }
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -135,22 +174,21 @@ public class FrmMain extends javax.swing.JFrame {
                     .addComponent(jScrollPane1)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addGap(18, 18, 18)
-                        .addComponent(tfSearchContact, javax.swing.GroupLayout.PREFERRED_SIZE, 397, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(80, 80, 80)
-                        .addComponent(btnNewContact)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tfSearchContact, javax.swing.GroupLayout.PREFERRED_SIZE, 477, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 84, Short.MAX_VALUE)
+                        .addComponent(btnNewContact)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(13, 13, 13)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(tfSearchContact, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnNewContact))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -159,7 +197,7 @@ public class FrmMain extends javax.swing.JFrame {
 
         jLabel2.setText("Search:");
 
-        tfGroupSearch.addActionListener(this::tfGroupSearchActionPerformed);
+        tfSearchGroup.addCaretListener(this::tfSearchGroupCaretUpdate);
 
         btnNewGroup.setText("New Group");
         btnNewGroup.addActionListener(this::btnNewGroupActionPerformed);
@@ -180,6 +218,11 @@ public class FrmMain extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tblGroups.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblGroupsMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(tblGroups);
         if (tblGroups.getColumnModel().getColumnCount() > 0) {
             tblGroups.getColumnModel().getColumn(0).setResizable(false);
@@ -196,22 +239,21 @@ public class FrmMain extends javax.swing.JFrame {
                     .addComponent(jScrollPane2)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel2)
-                        .addGap(18, 18, 18)
-                        .addComponent(tfGroupSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 397, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(80, 80, 80)
-                        .addComponent(btnNewGroup)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tfSearchGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 477, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 92, Short.MAX_VALUE)
+                        .addComponent(btnNewGroup)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(13, 13, 13)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(tfGroupSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(tfSearchGroup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnNewGroup))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -222,34 +264,15 @@ public class FrmMain extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(625, Short.MAX_VALUE)
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(32, 32, 32))
+            .addComponent(jTabbedPane1)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(45, 45, 45)
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(283, Short.MAX_VALUE))
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING)
         );
 
         pack();
-        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void tfSearchContactActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfSearchContactActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tfSearchContactActionPerformed
-
-    private void tfGroupSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfGroupSearchActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tfGroupSearchActionPerformed
-
-    private void btnNewGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewGroupActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnNewGroupActionPerformed
 
     private void tfSearchContactCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_tfSearchContactCaretUpdate
         // TODO add your handling code here:
@@ -274,6 +297,120 @@ public class FrmMain extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnNewContactActionPerformed
 
+    private void tblContactsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblContactsMouseClicked
+        // TODO add your handling code here:
+        DefaultTableModel model = (DefaultTableModel) tblContacts.getModel();
+        
+        this.phoneNumber = model.getValueAt(tblContacts.getSelectedRow(), 0).toString();
+        
+        pmnuContacts.show(evt.getComponent(), evt.getX(), evt.getY());
+    }//GEN-LAST:event_tblContactsMouseClicked
+
+    private void pmnuiEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pmnuiEditActionPerformed
+        // TODO add your handling code here:
+        int index = contactDAOImpl.getIndex(this.phoneNumber);
+        Contact contact = contactDAOImpl.getAllContacts().get(index);
+        
+        FrmContactEdit frmEditContact = new FrmContactEdit(this, true, contact, this.groupDAOImpl.getAllGroups());
+        frmEditContact.setVisible(true);
+        
+        if(frmEditContact.getUpdated() == false){
+            return;
+        }
+        
+        if(this.contactDAOImpl.updateContact(this.phoneNumber, frmEditContact.getContact()) == true){
+            loadContacts("*");
+            JOptionPane.showMessageDialog(null, "Contact successfully updated!", "System information", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Error encountered, contact not udpated!", "System information", JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_pmnuiEditActionPerformed
+
+    private void pmnuiDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pmnuiDeleteActionPerformed
+        // TODO add your handling code here:
+        int option = JOptionPane.showConfirmDialog(null, "Are you sure?", "Confirm delete", JOptionPane.OK_CANCEL_OPTION);
+        
+        if(option != JOptionPane.OK_OPTION){
+            return;
+        } 
+        
+        if(this.contactDAOImpl.deleteContact(this.phoneNumber) == true){
+            loadContacts("*");
+            JOptionPane.showMessageDialog(null, "Contact successfully deleted!", "System information", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Error encountered, contact not deleted!", "System information", JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_pmnuiDeleteActionPerformed
+
+    private void tfSearchGroupCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_tfSearchGroupCaretUpdate
+        // TODO add your handling code here:
+        String keyword = tfSearchGroup.getText();
+        loadGroups(keyword);
+    }//GEN-LAST:event_tfSearchGroupCaretUpdate
+
+    private void tblGroupsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblGroupsMouseClicked
+        // TODO add your handling code here:
+        DefaultTableModel model = (DefaultTableModel) tblGroups.getModel();
+        
+        this.groupId = model.getValueAt(tblGroups.getSelectedRow(), 0).toString();
+        
+        pmnuGroups.show(evt.getComponent(), evt.getX(), evt.getY());
+    }//GEN-LAST:event_tblGroupsMouseClicked
+
+    private void btnNewGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewGroupActionPerformed
+        // TODO add your handling code here:
+        FrmGroupNew frmGroupNew = new FrmGroupNew(this, true);
+        frmGroupNew.setVisible(true);
+        
+        if(frmGroupNew.getGroup() == null){
+            return;
+        }
+        
+        if(this.groupDAOImpl.addGroup(frmGroupNew.getGroup()) == true){
+            loadGroups("*");
+            JOptionPane.showMessageDialog(null, "Group successfully saved!", "System information", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Error encountered, group not saved!", "System information", JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_btnNewGroupActionPerformed
+
+    private void pmnuiEditGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pmnuiEditGroupActionPerformed
+        // TODO add your handling code here:
+        int index = groupDAOImpl.getIndex(this.groupId);
+        Group group = groupDAOImpl.getAllGroups().get(index);
+        
+        FrmGroupEdit frmGroupEdit = new FrmGroupEdit(this, true, group);
+        frmGroupEdit.setVisible(true);
+        
+        if(frmGroupEdit.getUpdated() == false){
+            return;
+        }
+        
+        if(this.groupDAOImpl.updateGroup(this.groupId, frmGroupEdit.getGroup()) == true){
+            loadGroups("*");
+            loadContacts("*");
+            JOptionPane.showMessageDialog(null, "Group successfully updated!", "System information", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Error encountered, group not udpated!", "System information", JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_pmnuiEditGroupActionPerformed
+
+    private void pmnuiDeleteGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pmnuiDeleteGroupActionPerformed
+        // TODO add your handling code here:
+        int option = JOptionPane.showConfirmDialog(null, "Are you sure?", "Confirm delete", JOptionPane.OK_CANCEL_OPTION);
+        
+        if(option != JOptionPane.OK_OPTION){
+            return;
+        } 
+        
+        if(this.groupDAOImpl.deleteGroup(this.groupId) == true){
+            loadGroups("*");
+            JOptionPane.showMessageDialog(null, "Group successfully deleted!", "System information", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Error encountered, group not deleted!", "System information", JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_pmnuiDeleteGroupActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -294,7 +431,16 @@ public class FrmMain extends javax.swing.JFrame {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+         try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
+            logger.log(java.util.logging.Level.SEVERE, null, ex);
+        }
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> new FrmMain().setVisible(true));
     }
@@ -309,9 +455,15 @@ public class FrmMain extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JPopupMenu pmnuContacts;
+    private javax.swing.JPopupMenu pmnuGroups;
+    private javax.swing.JMenuItem pmnuiDelete;
+    private javax.swing.JMenuItem pmnuiDeleteGroup;
+    private javax.swing.JMenuItem pmnuiEdit;
+    private javax.swing.JMenuItem pmnuiEditGroup;
     private javax.swing.JTable tblContacts;
     private javax.swing.JTable tblGroups;
-    private javax.swing.JTextField tfGroupSearch;
     private javax.swing.JTextField tfSearchContact;
+    private javax.swing.JTextField tfSearchGroup;
     // End of variables declaration//GEN-END:variables
 }
